@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-         maven "MAVEN3.9"
+        maven "MAVEN3.9"
         jdk "JDK17"
 
     }
@@ -59,10 +59,21 @@ pipeline {
                    -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
                    -Dsonar.junit.reportsPath=target/surefire-reports/ \
                    -Dsonar.jacoco.reportsPath=target/jacoco.exec \
-                   -Dsonar.login=sqa_f0a5c53bc9929688f950ee3c5dbccf5cfb888710 \
                    -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
               }
             }
         }
+
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                    // true = set pipeline to UNSTABLE, false = don't
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        
     }
 }
